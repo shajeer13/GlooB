@@ -1,0 +1,6 @@
+# Python cache files
+*.pyc
+__pycache__/
+
+# Django collected static files
+/gloob/staticfiles/
