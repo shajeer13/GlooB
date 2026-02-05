@@ -4,3 +4,7 @@ __pycache__/
 
 # Django collected static files
 /gloob/staticfiles/
+
+# Virtual environment
+/venv/
+
