@@ -1,44 +1,46 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from django.contrib import messages
+from django.contrib.auth.models import User
 
-def home(request):
-    # Products list can be static or database
-    products = [
-        {'name': 'Beetroot Lip Balm', 'price': 229, 'image_url': 'https://www.gloobcare.com/cdn/shop/files/WhatsApp_Image_2025-12-19_at_6.19.26_PM_1.jpg?v=1767094384&width=1600'},
-        # add other products...
-    ]
-    return render(request, 'store/home.html', {'products': products})
-
-def signup(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']
-        password2 = request.POST['password2']
-
-        if password == password2:
-            if User.objects.filter(username=username).exists():
-                messages.error(request, "Username already exists")
-            elif User.objects.filter(email=email).exists():
-                messages.error(request, "Email already exists")
-            else:
-                User.objects.create_user(username=username, email=email, password=password)
-                messages.success(request, "Account created successfully")
-                return redirect('login')
-        else:
-            messages.error(request, "Passwords do not match")
-    return render(request, 'store/signup.html')
-
+# Login view
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+    if request.method == "POST":
+        username = request.POST.get('username')  # safer than request.POST['username']
+        password = request.POST.get('password')
+        
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('home')  # home page URL
         else:
-            messages.error(request, "Invalid username or password")
-    return render(request, 'store/login.html')
+            context = {'error': 'Invalid username or password'}
+            return render(request, 'store/login.html', context)
+    else:
+        return render(request, 'store/login.html')
+
+
+# Signup view
+def signup(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        if password != confirm_password:
+            context = {'error': "Passwords do not match!"}
+            return render(request, 'store/signup.html', context)
+        
+        if User.objects.filter(username=username).exists():
+            context = {'error': "Username already taken!"}
+            return render(request, 'store/signup.html', context)
+        
+        # Create new user
+        User.objects.create_user(username=username, password=password)
+        return redirect('login')
+    
+    return render(request, 'store/signup.html')
+
+
+# Home view
+def home(request):
+    return render(request, 'store/home.html')
