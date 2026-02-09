@@ -24,7 +24,8 @@ def signup(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+        confirm_password = request.POST.get('password2')
+
         
         if password != confirm_password:
             context = {'error': "Passwords do not match!"}
