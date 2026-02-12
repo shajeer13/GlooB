@@ -5,13 +5,13 @@ from django.contrib.auth.models import User
 # Login view
 def login_view(request):
     if request.method == "POST":
-        username = request.POST.get('username')  # safer than request.POST['username']
+        username = request.POST.get('username')
         password = request.POST.get('password')
         
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')  # home page URL
+            return redirect('home')
         else:
             context = {'error': 'Invalid username or password'}
             return render(request, 'store/login.html', context)
@@ -26,7 +26,6 @@ def signup(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('password2')
 
-        
         if password != confirm_password:
             context = {'error': "Passwords do not match!"}
             return render(request, 'store/signup.html', context)
@@ -35,7 +34,6 @@ def signup(request):
             context = {'error': "Username already taken!"}
             return render(request, 'store/signup.html', context)
         
-        # Create new user
         User.objects.create_user(username=username, password=password)
         return redirect('login')
     
