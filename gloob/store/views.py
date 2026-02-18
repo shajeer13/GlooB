@@ -1,21 +1,27 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate
-from django.contrib.auth.decorators import login_required
+# store/views.py
+
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from .models import Product
+from django.contrib import messages
 
 # Login view
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
+        
         user = authenticate(request, username=username, password=password)
-        if user:
+        if user is not None:
             login(request, user)
+            messages.success(request, f"Welcome, {username}!")
             return redirect('home')
         else:
-            return render(request, 'store/login.html', {'error': 'Invalid username or password'})
-    return render(request, 'store/login.html')
+            context = {'error': 'Invalid username or password'}
+            return render(request, 'store/login.html', context)
+    else:
+        return render(request, 'store/login.html')
+
 
 # Signup view
 def signup(request):
@@ -27,46 +33,36 @@ def signup(request):
         if password != confirm_password:
             context = {'error': "Passwords do not match!"}
             return render(request, 'store/signup.html', context)
-
+        
         if User.objects.filter(username=username).exists():
             context = {'error': "Username already taken!"}
             return render(request, 'store/signup.html', context)
-
+        
+        # Create new user
         User.objects.create_user(username=username, password=password)
+        messages.success(request, f"Account created for {username}! Please login.")
         return redirect('login')
-
+    
     return render(request, 'store/signup.html')
 
+
 # Home view
-@login_required
 def home(request):
-    products = Product.objects.all()
-    return render(request, 'store/home.html', {'products': products})
+    return render(request, 'store/home.html')
 
-# Cart views
-@login_required
+
+# Cart view
 def cart(request):
-    cart = request.session.get('cart', {})
-    products_in_cart = []
-    total = 0
-    for product_id, quantity in cart.items():
-        product = get_object_or_404(Product, id=product_id)
-        product.quantity = quantity
-        product.total_price = product.price * quantity
-        total += product.total_price
-        products_in_cart.append(product)
-    return render(request, 'store/cart.html', {
-        'products_in_cart': products_in_cart,
-        'total': total
-    })
+    return render(request, 'store/cart.html')
+# store/views.py
+from django.shortcuts import render, redirect
 
-@login_required
+# Existing views: home, login_view, signup, cart
+
 def add_to_cart(request, id):
-    product = get_object_or_404(Product, id=id)
-    cart = request.session.get('cart', {})
-    if str(product.id) in cart:
-        cart[str(product.id)] += 1
-    else:
-        cart[str(product.id)] = 1
-    request.session['cart'] = cart
-    return redirect('cart')
+    # നിങ്ങൾ products DB അല്ലെങ്കിൽ session/cart logic use ചെയ്യാം
+    # simplified version:
+    context = {'message': f'Product {id} added to cart!'}
+    return render(request, 'store/cart.html', context)
+
+
