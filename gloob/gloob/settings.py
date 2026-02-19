@@ -7,12 +7,9 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 SECRET_KEY = 'django-insecure-31at#s2g4)$!o6$*1ku4*krislj#rd%22b$&%i@(qd$7x98o=s'
 DEBUG = False
 ALLOWED_HOSTS = ['shajeer3137.pythonanywhere.com']
-
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -24,10 +21,9 @@ INSTALLED_APPS = [
     'store',
 ]
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -36,9 +32,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 ROOT_URLCONF = 'gloob.urls'
-
 
 TEMPLATES = [
     {
@@ -56,9 +50,7 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'gloob.wsgi.application'
-
 
 DATABASES = {
     'default': {
@@ -67,7 +59,6 @@ DATABASES = {
     }
 }
 
-
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
@@ -75,26 +66,21 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-
-
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')   # this is where collectstatic copies files
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # your local static folder
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_DIRS = [BASE_DIR / 'static']  
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# Login settings
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
-
+# Email backend (console for development)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
